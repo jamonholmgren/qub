@@ -315,7 +315,6 @@ Function handle_request% (c As Integer)
     handle_request = 1
     code$ = "200 OK"
     content_type$ = "text/html"
-    format$ = "binary" ' "binary" or "text"
 
     Select Case client_method(c)
         Case METHOD_HEAD
@@ -336,7 +335,9 @@ Function handle_request% (c As Integer)
                 Case InStr(uri$, "/robots.txt")
                     ' html$ = robots_txt()
                     GoTo not_found
-                Case StaticExists(uri$)
+                Case StaticExists(filename$)
+                    format$ = "binary" ' "binary" or "text"
+
                     Select Case ext$
                         Case ".css"
                             content_type$ = "text/css"
@@ -402,6 +403,14 @@ Function handle_request% (c As Integer)
                             content_type$ = "text/plain"
                             format$ = "text"
                     End Select
+
+                    If format$ = "binary" Then
+                        respond_binary c, "HTTP/1.1 " + code$, filename$, content_type$
+                    Else
+                        respond_static c, "HTTP/1.1 " + code$, filename$, content_type$
+                    End If
+
+                    Exit Function
                 Case PageExists(uri$)
                     ' route any pages in the pages folder
                     html$ = load_page$(uri$)
@@ -410,11 +419,8 @@ Function handle_request% (c As Integer)
                     code$ = "404 Not Found"
             End Select
 
-            If format$ = "binary" Then
-                respond_binary c, "HTTP/1.1 " + code$, filename$, content_type$
-            Else
-                respond_static c, "HTTP/1.1 " + code$, filename$, content_type$
-            End If
+            respond c, "HTTP/1.1 " + code$, html$, content_type$
+            
         Case METHOD_POST
             GoTo unimplemented
         Case Else
@@ -462,7 +468,7 @@ Function PageExists(filename$)
 End Function
 
 Function StaticExists(filename$)
-    StaticExists = _FILEEXISTS("./web" + filename$) * -1
+    StaticExists = _FILEEXISTS("./web/static" + filename$) * -1
 End Function
 
 ' Actually responds to the request

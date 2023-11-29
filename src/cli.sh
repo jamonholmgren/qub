@@ -121,6 +121,8 @@ if [[ $1 == "create" ]]; then
     echo -e "${GREEN}✓${END} web/pages/home.html"
     curl -s $GITHUB_TEMPLATE/web/pages/contact.html > $DOMAIN/web/pages/contact.html
     echo -e "${GREEN}✓${END} web/pages/contact.html"
+    curl -s $GITHUB_TEMPLATE/web/pages/404.html > $DOMAIN/web/pages/404.html
+    echo -e "${GREEN}✓${END} web/pages/404.html"
     curl -s $GITHUB_TEMPLATE/web/static/scripts.js > $DOMAIN/web/static/scripts.js
     echo -e "${GREEN}✓${END} web/static/scripts.js"
     curl -s $GITHUB_TEMPLATE/web/static/styles.css > $DOMAIN/web/static/styles.css
