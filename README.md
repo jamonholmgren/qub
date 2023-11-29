@@ -2,6 +2,15 @@
 
 (talk about what it is here)
 
+## TODO
+
+- [ ] Fill out the README, documentation, screenshots
+- [ ] Set up CI
+- [ ] Add a Deployment doc
+- [ ] Make the default template look nicer
+- [ ] htmx version maybe
+- [ ] YouTube video on Jamon's Code Quests
+
 ## Installation
 
 First, alias the `qub` command to the following:
