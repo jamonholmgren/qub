@@ -167,21 +167,21 @@ main() {
 
     # Help command if provided -h or --help
 
-    echo "${CYAN}Usage: qub [command|option]${END}"
-    echo ""
-    echo "Commands:"
-    echo "  ${CYAN}create${END}          Create a new Qub QB64 web project"
-    echo ""
-    echo "Options:"
-    echo "  ${YELLOW}-h${END}, ${YELLOW}--help${END}      Show help"
-    echo "  ${YELLOW}-v${END}, ${YELLOW}--version${END}   Show version number"
-    echo ""
-    echo "Examples:"
-    echo "  ${CYAN}qub create${END}"
-    echo ""
-    echo "If you need more help, please visit:"
-    echo "  ${DKGRAY}https://github.com/jamonholmgren/qub${END}"
-    echo ""
+    echo -e "${CYAN}Usage: qub [command|option]${END}"
+    echo -e ""
+    echo -e "Commands:"
+    echo -e "  ${CYAN}create${END}          Create a new Qub QB64 web project"
+    echo -e ""
+    echo -e "Options:"
+    echo -e "  ${YELLOW}-h${END}, ${YELLOW}--help${END}      Show help"
+    echo -e "  ${YELLOW}-v${END}, ${YELLOW}--version${END}   Show version number"
+    echo -e ""
+    echo -e "Examples:"
+    echo -e "  ${CYAN}qub create${END}"
+    echo -e ""
+    echo -e "If you need more help, please visit:"
+    echo -e "  ${DKGRAY}https://github.com/jamonholmgren/qub${END}"
+    echo -e ""
     return 0
 }
 
