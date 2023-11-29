@@ -66,21 +66,23 @@ This is the Qub web server. You can modify it if you want to change the port or 
 
 However, if you don't modify it, you can periodically update it by running `qub update`. Note this will blow away any modifications you've made, so be careful!
 
-Qub's web server is originally based on [Yacy](https://github.com/smokingwheels/Yacy_front_end) by SmokingWheels. It comes with a number of features:
+Qub's web server was originally based on [Yacy](https://github.com/smokingwheels/Yacy_front_end) by SmokingWheels, but has been heavily modified since. It comes with a number of features:
 
 - [x] Page routing (e.g. jamon.dev/links renders web/pages/links.html)
 - [x] Individual header and footer and <head> support
 - [x] Static file serving (css, js, etc)
 - [x] Binary file serving (images, fonts, etc)
 - [x] Custom 404 page support
-- [x] Basic dynamic variable support (e.g. `${year}` in web/footer.html)
+- [x] Basic dynamic variable support (e.g. `${year}` in web/footer.html, `${slug}` for use in your navigation, etc)
+- [ ] Customizable dynamic variable support (coming soon)
 - [ ] 301 redirects support (coming soon)
 - [ ] Custom 500 page support (coming soon)
-- [ ] Custom port support (coming soon -- currently fixed at 6464)
+- [ ] Custom port support (coming soon)
+- [ ] More customizable templating support (coming soon)
 
 It does not (and probably won't) support HTTPS or HTTP2. I recommend putting CloudFlare in front of it in production (more in the [deploy guide](#deploy-guide) below).
 
-### Common files
+### Common included files
 
 In the `web` folder, you'll find three files that are included on every page -- head.html, header.html, and footer.html.
 
@@ -125,6 +127,8 @@ When I was twelve, I built my first game in QBasic -- and kept building games an
 A few years ago, I was talking about rebuilding my website in something different, just for a fun challenge, and my friend Mark Villacampa said ["do it in BASIC you coward!"](https://twitter.com/MarkVillacampa/status/1594426506754801664). I took on the challenge and built [jamon.dev](https://jamon.dev) in QB64.
 
 Once I had a working website, I realized that I wanted to make it easier for other people to build websites in QB64, so I started building Qub, aided by [@knewter](https://github.com/knewter) who is another QBasic fan from way back.
+
+Qub is not particularly important to modern technology in the grand scheme of things, but it's been a blast to work on. I hope you enjoy it!
 
 ## TODO
 
