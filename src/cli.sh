@@ -77,14 +77,34 @@ if [[ $1 == "create" ]]; then
     # Make the folder
     mkdir $DOMAIN
     mkdir $DOMAIN/bin
+    mkdir -p $DOMAIN/web/pages
+    mkdir -p $DOMAIN/web/static
 
     GITHUB_TEMPLATE="https://raw.githubusercontent.com/jamonholmgren/qub/main/template"
 
     # Copy files from Github
     curl -s $GITHUB_TEMPLATE/README.md > $DOMAIN/README.md
+    echo "${GREEN}✓${END} README.md"
     curl -s $GITHUB_TEMPLATE/app.bas > $DOMAIN/app.bas
+    echo "${GREEN}✓${END} app.bas"
     curl -s $GITHUB_TEMPLATE/bin/install_qb64 > $DOMAIN/bin/install_qb64
+    echo "${GREEN}✓${END} bin/install_qb64"
     curl -s $GITHUB_TEMPLATE/bin/build > $DOMAIN/bin/build
+    echo "${GREEN}✓${END} bin/build"
+    curl -s $GITHUB_TEMPLATE/web/pages/home.html > $DOMAIN/web/pages/home.html
+    echo "${GREEN}✓${END} web/pages/home.html"
+    curl -s $GITHUB_TEMPLATE/web/pages/contact.html > $DOMAIN/web/pages/contact.html
+    echo "${GREEN}✓${END} web/pages/contact.html"
+    curl -s $GITHUB_TEMPLATE/web/static/scripts.js > $DOMAIN/web/static/scripts.js
+    echo "${GREEN}✓${END} web/static/scripts.js"
+    curl -s $GITHUB_TEMPLATE/web/static/styles.css > $DOMAIN/web/static/styles.css
+    echo "${GREEN}✓${END} web/static/styles.css"
+    curl -s $GITHUB_TEMPLATE/web/footer.html > $DOMAIN/web/footer.html
+    echo "${GREEN}✓${END} web/footer.html"
+    curl -s $GITHUB_TEMPLATE/web/header.html > $DOMAIN/web/header.html
+    echo "${GREEN}✓${END} web/header.html"
+    curl -s $GITHUB_TEMPLATE/web/head.html > $DOMAIN/web/head.html
+    echo "${GREEN}✓${END} web/head.html"
     
     # Make the binary files executable
     chmod +x $DOMAIN/bin/*
