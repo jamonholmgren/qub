@@ -3,9 +3,9 @@
 Qub (pronounced "cube") is a CLI that generates a web server and framework for building websites in [QB64](https://qb64.com/) -- a more modern variant of QBasic.
 
 <table><tr><td>
-  <img alt="Screenshot of Qub running" src="./.github/images/screenshot-cli.png" width="300" />
+  <img alt="Screenshot of Qub running" src="./.github/images/screenshot-cli.png" width="350" />
 </td><td>
-  <img alt="Screenshot of Qub-powered website" src="./.github/images/screenshot-website.png" width="300" />
+  <img alt="Screenshot of Qub-powered website" src="./.github/images/screenshot-website.png" width="350" />
 </td></tr></table>
 
 ## Getting Started
