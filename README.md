@@ -66,6 +66,58 @@ This is the Qub web server. You can modify it if you want to change the port or 
 
 However, if you don't modify it, you can periodically update it by running `qub update`. Note this will blow away any modifications you've made, so be careful!
 
+Qub's web server is originally based on [Yacy](https://github.com/smokingwheels/Yacy_front_end) by SmokingWheels. It comes with a number of features:
+
+- [x] Page routing (e.g. jamon.dev/links renders web/pages/links.html)
+- [x] Individual header and footer and <head> support
+- [x] Static file serving (css, js, etc)
+- [x] Binary file serving (images, fonts, etc)
+- [x] Custom 404 page support
+- [x] Basic dynamic variable support (e.g. `${year}` in web/footer.html)
+- [ ] 301 redirects support (coming soon)
+- [ ] Custom 500 page support (coming soon)
+- [ ] Custom port support (coming soon -- currently fixed at 6464)
+
+It does not (and probably won't) support HTTPS or HTTP2. I recommend putting CloudFlare in front of it in production (more in the [deploy guide](#deploy-guide) below).
+
+### Common files
+
+In the `web` folder, you'll find three files that are included on every page -- head.html, header.html, and footer.html.
+
+The header and footer are both directly within the `<body>` tag, while head is within the `<head>` tag, like so:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- head.html goes here -->
+  </head>
+  <body>
+    <!-- header.html goes here -->
+    <!-- routed page content goes here -->
+    <!-- footer.html goes here -->
+  </body>
+</html>
+```
+
+### web/pages
+
+This is where your website's pages go. Each page is an HTML file. You can add as many as you want, and they'll be routed automatically (minus the .html extension).
+
+So, for example, if you add `web/pages/links.html`, it will be available at `example.com/links`. If you add a folder it'll route to that as well, so `web/pages/blog/2023.html` will be available at `example.com/blog/2023`.
+
+### web/static
+
+You'll put your static files here -- CSS, JS, images, fonts, etc. They'll be served at `example.com/static/` (e.g. `example.com/static/styles.css`). Any image files, fonts, PDFs, etc will be served as binary files (e.g. `example.com/static/logo.png`).
+
+### 404.html
+
+If you want to customize your 404 page, you can do so by editing `web/pages/404.html`. This is shown if the router is unable to find a page for the given URL. It'll also respond with the proper 404 status code.
+
+## Deploy Guide
+
+COMING SOON!
+
 ## History
 
 When I was twelve, I built my first game in QBasic -- and kept building games and small apps (we called them "programs" in those days) for years. I have a lot of nostalgia and a special place in my heart for QBasic.
