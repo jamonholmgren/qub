@@ -79,10 +79,10 @@ main() {
         fi
 
         # Make the folders
-        mkdir $DOMAIN
-        mkdir $DOMAIN/bin
-        mkdir -p $DOMAIN/web/pages
-        mkdir -p $DOMAIN/web/static
+        mkdir "${DOMAIN}"
+        mkdir "${DOMAIN}/bin"
+        mkdir -p "${DOMAIN}/web/pages"
+        mkdir -p "${DOMAIN}/web/static"
 
         GITHUB_TEMPLATE="https://raw.githubusercontent.com/jamonholmgren/qub/main/template"
 
