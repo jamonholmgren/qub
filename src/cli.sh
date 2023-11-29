@@ -18,6 +18,19 @@ GRAY='\033[0;37m'
 DKGRAY='\033[1;30m'
 END='\033[0m' # End Color
 
+function replace_in_file {
+    local filename=$1
+    local variable_name=$2
+    local replace_with=$3
+    local os_type=$(uname -s)
+
+    if [[ $os_type == "Darwin" ]]; then
+        sed -i '' "s/\$${variable_name}/${replace_with}/g" "$filename"
+    elif [[ $os_type == "Linux" ]]; then
+        sed -i "s/\$${variable_name}/${replace_with}/g" "$filename"
+    fi
+}
+
 # Print header
 
 echo ""
@@ -84,38 +97,33 @@ if [[ $1 == "create" ]]; then
 
     # Copy files from Github
     curl -s $GITHUB_TEMPLATE/README.md > $DOMAIN/README.md
-    echo "${GREEN}✓${END} README.md"
+    replace_in_file "$DOMAIN/README.md" "DOMAIN" "$DOMAIN"
+    echo -e "${GREEN}✓${END} README.md"
     curl -s $GITHUB_TEMPLATE/app.bas > $DOMAIN/app.bas
-    echo "${GREEN}✓${END} app.bas"
+    echo -e "${GREEN}✓${END} app.bas"
     curl -s $GITHUB_TEMPLATE/bin/install_qb64 > $DOMAIN/bin/install_qb64
-    echo "${GREEN}✓${END} bin/install_qb64"
+    echo -e "${GREEN}✓${END} bin/install_qb64"
     curl -s $GITHUB_TEMPLATE/bin/build > $DOMAIN/bin/build
-    echo "${GREEN}✓${END} bin/build"
+    echo -e "${GREEN}✓${END} bin/build"
     curl -s $GITHUB_TEMPLATE/web/pages/home.html > $DOMAIN/web/pages/home.html
-    echo "${GREEN}✓${END} web/pages/home.html"
+    replace_in_file "$DOMAIN/web/pages/home.html" "DOMAIN" "$DOMAIN"
+    echo -e "${GREEN}✓${END} web/pages/home.html"
     curl -s $GITHUB_TEMPLATE/web/pages/contact.html > $DOMAIN/web/pages/contact.html
-    echo "${GREEN}✓${END} web/pages/contact.html"
+    echo -e "${GREEN}✓${END} web/pages/contact.html"
     curl -s $GITHUB_TEMPLATE/web/static/scripts.js > $DOMAIN/web/static/scripts.js
-    echo "${GREEN}✓${END} web/static/scripts.js"
+    echo -e "${GREEN}✓${END} web/static/scripts.js"
     curl -s $GITHUB_TEMPLATE/web/static/styles.css > $DOMAIN/web/static/styles.css
-    echo "${GREEN}✓${END} web/static/styles.css"
+    echo -e "${GREEN}✓${END} web/static/styles.css"
     curl -s $GITHUB_TEMPLATE/web/footer.html > $DOMAIN/web/footer.html
-    echo "${GREEN}✓${END} web/footer.html"
+    replace_in_file "$DOMAIN/web/footer.html" "DOMAIN" "$DOMAIN"
+    echo -e "${GREEN}✓${END} web/footer.html"
     curl -s $GITHUB_TEMPLATE/web/header.html > $DOMAIN/web/header.html
-    echo "${GREEN}✓${END} web/header.html"
+    echo -e "${GREEN}✓${END} web/header.html"
     curl -s $GITHUB_TEMPLATE/web/head.html > $DOMAIN/web/head.html
-    echo "${GREEN}✓${END} web/head.html"
+    echo -e "${GREEN}✓${END} web/head.html"
     
     # Make the binary files executable
     chmod +x $DOMAIN/bin/*
-
-    # Replace the domain name in the README
-
-    if [[ $OS == "Darwin" ]]; then
-      sed -i '' "s/\$DOMAIN/$DOMAIN/g" $DOMAIN/README.md
-    elif [[ $OS == "Linux" ]]; then
-      sed -i "s/\$DOMAIN/$DOMAIN/g" $DOMAIN/README.md
-    fi
 
     # Ask if the user wants to install QB64
 

@@ -7,3 +7,7 @@ This is a website powered by [QB64](https://www.qb64.org/) and [Qub](https://qub
 Run `./bin/install_qb64` to install dependencies.
 
 Run `./bin/serve` to build and run the website locally.
+
+## Acknowledgements
+
+- Original QB64 webserver found here: https://github.com/smokingwheels/Yacy_front_end/blob/master/yacyfrontend.bas

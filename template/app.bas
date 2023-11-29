@@ -1,6 +1,3 @@
-' QB64 web server inspired by the one found here: https://github.com/smokingwheels/Yacy_front_end/blob/master/yacyfrontend.bas
-' Modified to power https://jamon.dev
-
 $Console:Only
 
 ' Variables are integers by default if they start with a-z
@@ -39,11 +36,8 @@ Dim client_request(1 To MAX_CLIENTS) As String
 Dim client_uri(1 To MAX_CLIENTS) As String
 Dim client_method(1 To MAX_CLIENTS) As Integer
 Dim client_content_length(1 To MAX_CLIENTS) As Long
-
-' These ones are less important
 Dim client_host(1 To MAX_CLIENTS) As String
 Dim client_browser(1 To MAX_CLIENTS) As String
-' Dim client_content_encoding(1 To MAX_CLIENTS) As Integer
 
 connections = 0
 
@@ -321,49 +315,106 @@ Function handle_request% (c As Integer)
     handle_request = 1
     code$ = "200 OK"
     content_type$ = "text/html"
+    format$ = "binary" ' "binary" or "text"
+
     Select Case client_method(c)
         Case METHOD_HEAD
             respond c, "HTTP/1.1 200 OK", "", "text/html"
         Case METHOD_GET
             uri$ = client_uri(c)
+            l$ = Left$(uri$, InStr(uri$, ".") - 1)
+            ext$ = Right$(uri$, Len(uri$) - Len(l$))
+            filename$ = Mid$(uri$, InStr(uri$, "/static/") + 8)
 
             ' Router!
             Select Case 1
-                Case Len(client_uri(c)) ' hack .. length of 1 is probably just "/" so we capture home page
+                Case Len(uri$) ' hack .. length of 1 is just "/" so we capture home page
                     html$ = load_page$("home")
+                Case InStr(uri$, "/favicon.ico")
+                    ' html$ = favicon(c)
+                    GoTo not_found
+                Case InStr(uri$, "/robots.txt")
+                    ' html$ = robots_txt()
+                    GoTo not_found
+                Case StaticExists(uri$)
+                    Select Case ext$
+                        Case ".css"
+                            content_type$ = "text/css"
+                            format$ = "text"
+                        Case ".js"
+                            content_type$ = "text/javascript"
+                            format$ = "text"
+                        Case ".jpg"
+                            content_type$ = "image/jpeg"
+                        Case ".png"
+                            content_type$ = "image/png"
+                        Case ".ico"
+                            content_type$ = "image/x-icon"
+                        Case ".svg"
+                            content_type$ = "image/svg+xml"
+                        Case ".woff"
+                            content_type$ = "font/woff"
+                        Case ".woff2"
+                            content_type$ = "font/woff2"
+                        Case ".ttf"
+                            content_type$ = "font/ttf"
+                        Case ".eot"
+                            content_type$ = "application/vnd.ms-fontobject"
+                        Case ".otf"
+                            content_type$ = "font/otf"
+                        Case ".txt"
+                            content_type$ = "text/plain"
+                            format$ = "text"
+                        Case ".pdf"
+                            content_type$ = "application/pdf"
+                        Case ".zip"
+                            content_type$ = "application/zip"
+                        Case ".gz"
+                            content_type$ = "application/gzip"
+                        Case ".mp4"
+                            content_type$ = "video/mp4"
+                        Case ".mp3"
+                            content_type$ = "audio/mpeg"
+                        Case ".webm"
+                            content_type$ = "video/webm"
+                        Case ".ogg"
+                            content_type$ = "audio/ogg"
+                        Case ".ogv"
+                            content_type$ = "video/ogg"
+                        Case ".webp"
+                            content_type$ = "image/webp"
+                        Case ".json"
+                            content_type$ = "application/json"
+                            format$ = "text"
+                        Case ".xml"
+                            content_type$ = "application/xml"
+                            format$ = "text"
+                        Case ".csv"
+                            content_type$ = "text/csv"
+                            format$ = "text"
+                        Case ".html"
+                            content_type$ = "text/html"
+                            format$ = "text"
+                        Case ".htm"
+                            content_type$ = "text/html"
+                            format$ = "text"
+                        Case Else
+                            content_type$ = "text/plain"
+                            format$ = "text"
+                    End Select
                 Case PageExists(uri$)
                     ' route any pages in the pages folder
                     html$ = load_page$(uri$)
-                Case InStr(client_uri(c), "/favicon.ico")
-                    ' html$ = favicon(c)
-                    GoTo not_found
-                Case InStr(client_uri(c), "/robots.txt")
-                    ' html$ = robots_txt()
-                    GoTo not_found
-                Case StaticExists(filename$)
-                    html$ = load_static$(filename$)
-                Case InStr(client_uri(c), "/static/") AND InStr(client_uri(c), ".css")
-                    respond_static c, "HTTP/1.1 200 OK", "styles.css", "text/css"
-                    Exit Function
-                Case InStr(client_uri(c), "/static/") AND InStr(client_uri(c), ".js")
-                    respond_static c, "HTTP/1.1 200 OK", "scripts.js", "text/javascript"
-                    Exit Function
-                Case InStr(client_uri(c), "/static/") AND InStr(client_uri(c), ".jpg")
-                    image_name$ = Mid$(client_uri(c), InStr(client_uri(c), "/static/") + 8)
-                    Print "Loading image: " + image_name$
-                    respond_binary c, "HTTP/1.1 200 OK", image_name$, "image/jpeg"
-                    Exit Function
-                Case InStr(client_uri(c), "/static/") AND InStr(client_uri(c), ".png")
-                    image_name$ = Mid$(client_uri(c), InStr(client_uri(c), "/static/") + 8)
-                    Print "Loading image: " + image_name$
-                    respond_binary c, "HTTP/1.1 200 OK", image_name$, "image/png"
-                    Exit Function
                 Case Else
                     html$ = load_page$("/404")
                     code$ = "404 Not Found"
             End Select
 
-            respond c, "HTTP/1.1 " + code$, html$, content_type$
+            If format$ = "binary" Then
+                respond_binary c, "HTTP/1.1 " + code$, filename$, content_type$
+            Else
+                respond_static c, "HTTP/1.1 " + code$, filename$, content_type$
+            End If
         Case METHOD_POST
             GoTo unimplemented
         Case Else
@@ -411,7 +462,7 @@ Function PageExists(filename$)
 End Function
 
 Function StaticExists(filename$)
-    StaticExists = _FILEEXISTS("./web/static" + filename$) * -1
+    StaticExists = _FILEEXISTS("./web" + filename$) * -1
 End Function
 
 ' Actually responds to the request
@@ -423,7 +474,7 @@ Sub respond (c As Integer, header As String, payload As String, content_type As 
     out$ = header + CRLF
 
     out$ = out$ + "Date: " + datetime$ + CRLF
-    out$ = out$ + "Server: QweB64" + CRLF
+    out$ = out$ + "Server: Qub" + CRLF
     out$ = out$ + "Last-Modified: " + StartTime + CRLF
     out$ = out$ + "Cache-Control: public, max-age=86400, s-maxage=86400" + CRLF
     out$ = out$ + "Connection: close" + CRLF
@@ -489,8 +540,6 @@ Sub respond_binary (c As Integer, header As String, filename as String, content_
     out$ = out$ + "Date: " + datetime$ + CRLF
     out$ = out$ + "Server: QweB64" + CRLF
     out$ = out$ + "Last-Modified: " + StartTime + CRLF
-    ' 604800 seconds = 1 week
-    ' 86400 seconds = 1 day
     out$ = out$ + "Cache-Control: public, max-age=86400, s-maxage=86400" + CRLF
     out$ = out$ + "Connection: close" + CRLF
     out$ = out$ + "Content-Type: " + content_type + "; charset=UTF-8" + CRLF
@@ -639,6 +688,7 @@ Function full_html$ (title As String, body As String, pagename As String)
 
     h$ = h$ + "</head>" + CRLF
     h$ = h$ + "<body>" + CRLF
+    h$ = h$ + "<main>" + CRLF
     
     ' Load the header from header.html and add to h$
     Open "./web/header.html" For Input As #1
@@ -650,6 +700,7 @@ Function full_html$ (title As String, body As String, pagename As String)
 
     h$ = h$ + body + CRLF
 
+        
     ' Load the footer from footer.html and add to h$
     Open "./web/footer.html" For Input As #1
     Do While Not EOF(1)
@@ -658,6 +709,8 @@ Function full_html$ (title As String, body As String, pagename As String)
     Loop
     Close #1
     
+    h$ = h$ + "</main>" + CRLF
+
     h$ = h$ + "</body>" + CRLF
     h$ = h$ + "</html>" + CRLF
     full_html = h$
@@ -673,6 +726,8 @@ Function load_page$ (pagename as String)
 
     h$ = ""
     ' Read the page and return it
+    Print "Loading page: " + pagename
+
     Open "./web/pages/" + pagename + ".html" For Input As #1
     Do While Not EOF(1)
        Line Input #1, line$
@@ -689,17 +744,4 @@ Function load_page$ (pagename as String)
     Close #1
 
     load_page = full_html$(title$, h$, pagename)
-End Function
-
-Function load_static$ (filename as String)
-    h$ = ""
-    
-    Open "./web" + filename For Input As #1
-    Do While Not EOF(1)
-       Line Input #1, line$
-       h$ = h$ + line$ + CRLF
-    Loop
-    Close #1
-
-    load_static = h$
 End Function
