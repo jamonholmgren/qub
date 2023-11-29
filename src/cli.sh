@@ -84,10 +84,10 @@ if [[ $1 == "create" ]]; then
         exit 1
     fi
 
-    # Check for any whitespace in the domain name
-    if [[ $DOMAIN =~ [[:space:]] ]]; then
+    # Check for anything but numbers, letters, dashes, and periods
+    if [[ $DOMAIN =~ [^a-zA-Z0-9\.\-] ]]; then
         echo ""
-        echo -e "${RED}Domain name cannot contain whitespace.${END}"
+        echo -e "${RED}Domain name can only contain numbers, letters, dashes, and periods.${END}"
         echo ""
         exit 1
     fi
