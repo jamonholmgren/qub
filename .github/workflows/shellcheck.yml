@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - main
-      - ci
 
 name: "Trigger: Push action"
 permissions: {}
