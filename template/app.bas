@@ -639,7 +639,6 @@ Function full_html$ (title As String, body As String, pagename As String)
 
     h$ = h$ + "</head>" + CRLF
     h$ = h$ + "<body>" + CRLF
-    h$ = h$ + "<main>" + CRLF
     
     ' Load the header from header.html and add to h$
     Open "./web/header.html" For Input As #1
@@ -649,17 +648,8 @@ Function full_html$ (title As String, body As String, pagename As String)
     Loop
     Close #1
 
-    ' Load the nav from nav.html and add to h$
-    Open "./web/nav.html" For Input As #1
-    Do While Not EOF(1)
-       Line Input #1, line$
-       h$ = h$ + process_template(line$, pagename) + CRLF
-    Loop
-    Close #1
-
     h$ = h$ + body + CRLF
 
-        
     ' Load the footer from footer.html and add to h$
     Open "./web/footer.html" For Input As #1
     Do While Not EOF(1)
@@ -668,8 +658,6 @@ Function full_html$ (title As String, body As String, pagename As String)
     Loop
     Close #1
     
-    h$ = h$ + "</main>" + CRLF
-
     h$ = h$ + "</body>" + CRLF
     h$ = h$ + "</html>" + CRLF
     full_html = h$
