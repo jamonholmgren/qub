@@ -76,6 +76,14 @@ if [[ $1 == "create" ]]; then
         read DOMAIN
     fi
 
+    # If $DOMAIN is still empty, exit
+    if [[ -z $DOMAIN ]]; then
+        echo ""
+        echo -e "${RED}Domain name cannot be empty.${END}"
+        echo ""
+        exit 1
+    fi
+
     # Check for any whitespace in the domain name
     if [[ $DOMAIN =~ [[:space:]] ]]; then
         echo ""
