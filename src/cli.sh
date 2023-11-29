@@ -3,7 +3,7 @@
 # Qub CLI
 # By @jamonholmgren & @knewter
 
-VERSION="0.0.1"
+VERSION="0.1.0"
 
 # What OS are we running on?
 
@@ -15,8 +15,8 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 DKGRAY='\033[1;30m'
-GREEN='\033[0;32m'
 CYAN='\033[0;36m'
+GREEN='\033[0;32m'
 END='\033[0m' # End Color
 
 function replace_in_file {
@@ -159,8 +159,16 @@ if [[ $1 == "create" ]]; then
     echo -e "${YELLOW}Next steps:${END}"
     echo ""
     echo -e "  ${CYAN}cd ${DOMAIN}${END}"
+    if [[ $INSTALL_QB64 != "y" ]]; then
+        echo -e "  ${CYAN}./bin/install_qb64${END}"
+    fi
     echo -e "  ${CYAN}./bin/build${END}"
     echo -e "  ${CYAN}./app${END}"
+    echo ""
+    echo -e "${YELLOW}Support Qub development:${END}"
+    echo ""
+    echo -e "  ${CYAN}Star the repo: ${DKGRAY}https://github.com/jamonholmgren/qub${END}"
+    echo -e "  ${CYAN}Tell me what you're making: ${DKGRAY}https://twitter.com/jamonholmgren${END}"
     echo ""
 
     exit 0
