@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./qb64/qb64 -x -o ../app ./app.bas

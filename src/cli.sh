@@ -84,6 +84,7 @@ if [[ $1 == "create" ]]; then
     curl -s $GITHUB_TEMPLATE/README.md > $DOMAIN/README.md
     curl -s $GITHUB_TEMPLATE/app.bas > $DOMAIN/app.bas
     curl -s $GITHUB_TEMPLATE/bin/install_qb64 > $DOMAIN/bin/install_qb64
+    curl -s $GITHUB_TEMPLATE/bin/build > $DOMAIN/bin/build
     
     # Make the binary files executable
     chmod +x $DOMAIN/bin/*
@@ -94,6 +95,21 @@ if [[ $1 == "create" ]]; then
       sed -i '' "s/\$DOMAIN/$DOMAIN/g" $DOMAIN/README.md
     elif [[ $OS == "Linux" ]]; then
       sed -i "s/\$DOMAIN/$DOMAIN/g" $DOMAIN/README.md
+    fi
+
+    # Ask if the user wants to install QB64
+
+    echo ""
+    echo -e "${YELLOW}Do you want to install QB64?${END} ${DKGRAY}(y/n)${END}"
+    read INSTALL_QB64
+
+    if [[ $INSTALL_QB64 == "y" ]]; then
+        echo ""
+        echo -e "${YELLOW}Installing QB64...${END}"
+        echo ""
+        pushd $DOMAIN
+        ./bin/install_qb64
+        popd
     fi
 
     exit 0
