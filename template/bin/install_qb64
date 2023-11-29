@@ -5,8 +5,8 @@ echo "This installs QB64 on a computer or server."
 ROOT_FOLDER=$(pwd)
 
 # Check if $ROOT_FOLDER/app.bas exists (if not, exit with an error)
-if [ ! -f $ROOT_FOLDER/app.bas ]; then
-  echo "Error: app.bas not found in $ROOT_FOLDER"
+if [ ! -f "${ROOT_FOLDER}/app.bas" ]; then
+  echo "Error: app.bas not found in ${ROOT_FOLDER}"
   echo "(are you running this from the right folder?)"
   exit 1
 fi
@@ -21,7 +21,6 @@ if [ "$OS" == "Darwin" ]; then
   SOURCE_CODE_URL="https://github.com/QB64Official/qb64/releases/download/v2.1/qb64_dev_2022-09-08-07-14-00_47f5044_osx.tar.gz"
   UNZIPPED_FOLDER="qb64_2022-09-08-23-37-44_47f5044_osx"
   SETUP_SCRIPT="setup_osx.command"
-  SETUP_SCRIPT_RELATIVE="./qb64/$SETUP_SCRIPT"
 fi
 
 if [ "$OS" == "Linux" ]; then
@@ -29,18 +28,17 @@ if [ "$OS" == "Linux" ]; then
   SOURCE_CODE_URL="https://github.com/QB64Official/qb64/releases/download/v2.1/qb64_dev_2022-09-08-07-14-00_47f5044_lnx.tar.gz"
   UNZIPPED_FOLDER="qb64_2022-09-08-23-38-12_47f5044_lnx"
   SETUP_SCRIPT="setup_lnx.sh"
-  SETUP_SCRIPT_RELATIVE="./qb64/$SETUP_SCRIPT"
 fi
 
 # If ./qb64/qb64 exists, then we can skip the install step.
-if [ -d $ROOT_FOLDER/qb64 ]; then
+if [ -d "${ROOT_FOLDER}/qb64" ]; then
   echo "./qb64 exists ... skipping install step."
   echo "To force reinstall, delete the ./qb64 folder"
   exit 0
 fi
 
 # Download the latest qb64 source code
-curl -s -L -o ./qb64_src.tgz.gz $SOURCE_CODE_URL
+curl -s -L -o ./qb64_src.tgz.gz "${SOURCE_CODE_URL}"
 
 # Unzip the file
 tar -xf ./qb64_src.tgz.gz
@@ -49,25 +47,24 @@ tar -xf ./qb64_src.tgz.gz
 rm ./qb64_src.tgz.gz
 
 # Let's use ./qb64 as the folder name
-mv $UNZIPPED_FOLDER ./qb64
+mv "${UNZIPPED_FOLDER}" ./qb64
 
-cd ./qb64
+cd ./qb64 || exit 1
 
 # Run the setup script
 
 if [ "$OS" == "Darwin" ]; then
   # Remove the "run qb64" step of the script
-  sed -i '' 's/  .\/qb64/#  .\/qb64/' $SETUP_SCRIPT
-  open $SETUP_SCRIPT
+  sed -i '' 's/  .\/qb64/#  .\/qb64/' "${SETUP_SCRIPT}"
+  open "${SETUP_SCRIPT}"
 fi
 
 if [ "$OS" == "Linux" ]; then
   # We are (potentially) running as root, so we need to tell the script to ignore the root check
   # In ./qb64/setup_lnx.sh, replace the first instance of "exit 1" with "# exit 1"
-  sed -i 's/exit 1/# exit 1/' $SETUP_SCRIPT
+  sed -i 's/exit 1/# exit 1/' "${SETUP_SCRIPT}"
 
   # Also remove the "run qb64" step of the script
-  sed -i 's/  .\/qb64 &/#  .\/qb64 &/' $SETUP_SCRIPT
-  sh $SETUP_SCRIPT
+  sed -i 's/  .\/qb64 &/#  .\/qb64 &/' "${SETUP_SCRIPT}"
+  sh "${SETUP_SCRIPT}"
 fi
-
