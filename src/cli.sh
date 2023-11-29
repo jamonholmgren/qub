@@ -147,12 +147,12 @@ main() {
         echo ""
         echo -e "${YELLOW}Next steps:${END}"
         echo ""
-        echo -e "  ${CYAN}cd ${DOMAIN}${END}"
+        echo -e "  cd ${DOMAIN}"
         if [[ $INSTALL_QB64 != "y" ]]; then
-            echo -e "  ${CYAN}./bin/install_qb64${END}"
+            echo -e "  ./bin/install_qb64"
         fi
-        echo -e "  ${CYAN}./bin/build${END}"
-        echo -e "  ${CYAN}./app${END}"
+        echo -e "  ./bin/build"
+        echo -e "  ./app"
         echo ""
         echo -e "${YELLOW}Support Qub development:${END}"
         echo ""
