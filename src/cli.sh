@@ -42,7 +42,7 @@ main() {
 
     if [[ $1 == "-v" || $1 == "--version" ]]; then
         echo "${VERSION}"
-        exit 0
+        return 0
     fi
 
     # Help command if provided -h or --help
@@ -61,7 +61,7 @@ main() {
         echo "Examples:"
         echo "  qub create"
         echo ""
-        exit 0
+        return 0
     fi
 
     # Create command
@@ -81,7 +81,7 @@ main() {
             echo ""
             echo -e "${RED}Domain name cannot be empty.${END}"
             echo ""
-            exit 1
+            return 1
         fi
 
         # Check for anything but numbers, letters, dashes, and periods
@@ -89,7 +89,7 @@ main() {
             echo ""
             echo -e "${RED}Domain name can only contain numbers, letters, dashes, and periods.${END}"
             echo ""
-            exit 1
+            return 1
         fi
 
         # Check if the folder exists (DOMAIN)
@@ -97,7 +97,7 @@ main() {
             echo ""
             echo -e "${RED}Folder already exists.${END}"
             echo ""
-            exit 1
+            return 1
         fi
 
         # Make the folders
@@ -179,7 +179,7 @@ main() {
         echo -e "  ${CYAN}Tell me what you're making: ${DKGRAY}https://twitter.com/jamonholmgren${END}"
         echo ""
 
-        exit 0
+        return 0
     fi
 }
 
