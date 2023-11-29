@@ -1,7 +1,5 @@
 # Qub -- QBasic Website Generator
 
-<img alt="Qub logo" src="./.github/images/qub.webp" width="128" />
-
 Qub (pronounced "cube") is a CLI that generates a web server and framework for building websites in [QB64](https://qb64.com/) -- a more modern variant of QBasic.
 
 <table><tr><td>
