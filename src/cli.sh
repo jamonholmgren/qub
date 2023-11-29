@@ -5,10 +5,6 @@
 main() {
     VERSION="0.1.0"
 
-    # What OS are we running on?
-
-    OS=$(uname -s)
-
     # Colors
 
     BLUE='\033[1;34m'
@@ -23,7 +19,8 @@ main() {
         local filename=$1
         local variable_name=$2
         local replace_with=$3
-        local os_type=$(uname -s)
+        local os_type
+        os_type=$(uname -s)
 
         if [[ $os_type == "Darwin" ]]; then
             sed -i '' "s/\$${variable_name}/${replace_with}/g" "$filename"
@@ -54,7 +51,7 @@ main() {
         # If $DOMAIN isn't set, ask for it
         if [[ -z $DOMAIN ]]; then
             echo -e "${YELLOW}What domain will this be hosted on?${END} ${DKGRAY}(e.g. jamon.dev)${END}"
-            read DOMAIN
+            read -r DOMAIN
         fi
 
         # If $DOMAIN is still empty, exit
@@ -94,52 +91,52 @@ main() {
         echo ""
 
         # Copy files from Github
-        curl -s $GITHUB_TEMPLATE/README.md > $DOMAIN/README.md
+        curl -s $GITHUB_TEMPLATE/README.md > "${DOMAIN}/README.md"
         replace_in_file "$DOMAIN/README.md" "DOMAIN" "$DOMAIN"
         echo -e "${GREEN}✓${END} README.md"
-        curl -s $GITHUB_TEMPLATE/app.bas > $DOMAIN/app.bas
+        curl -s $GITHUB_TEMPLATE/app.bas > "${DOMAIN}/app.bas"
         echo -e "${GREEN}✓${END} app.bas"
-        curl -s $GITHUB_TEMPLATE/.gitignore > $DOMAIN/.gitignore
+        curl -s $GITHUB_TEMPLATE/.gitignore > "${DOMAIN}/.gitignore"
         echo -e "${GREEN}✓${END} .gitignore"
-        curl -s $GITHUB_TEMPLATE/bin/install_qb64 > $DOMAIN/bin/install_qb64
+        curl -s $GITHUB_TEMPLATE/bin/install_qb64 > "${DOMAIN}/bin/install_qb64"
         echo -e "${GREEN}✓${END} bin/install_qb64"
-        curl -s $GITHUB_TEMPLATE/bin/build > $DOMAIN/bin/build
+        curl -s $GITHUB_TEMPLATE/bin/build > "${DOMAIN}/bin/build"
         echo -e "${GREEN}✓${END} bin/build"
-        curl -s $GITHUB_TEMPLATE/web/pages/home.html > $DOMAIN/web/pages/home.html
+        curl -s $GITHUB_TEMPLATE/web/pages/home.html > "${DOMAIN}/web/pages/home.html"
         replace_in_file "$DOMAIN/web/pages/home.html" "DOMAIN" "$DOMAIN"
         echo -e "${GREEN}✓${END} web/pages/home.html"
-        curl -s $GITHUB_TEMPLATE/web/pages/contact.html > $DOMAIN/web/pages/contact.html
+        curl -s $GITHUB_TEMPLATE/web/pages/contact.html > "${DOMAIN}/web/pages/contact.html"
         echo -e "${GREEN}✓${END} web/pages/contact.html"
-        curl -s $GITHUB_TEMPLATE/web/pages/404.html > $DOMAIN/web/pages/404.html
+        curl -s $GITHUB_TEMPLATE/web/pages/404.html > "${DOMAIN}/web/pages/404.html"
         echo -e "${GREEN}✓${END} web/pages/404.html"
-        curl -s $GITHUB_TEMPLATE/web/static/scripts.js > $DOMAIN/web/static/scripts.js
+        curl -s $GITHUB_TEMPLATE/web/static/scripts.js > "${DOMAIN}/web/static/scripts.js"
         echo -e "${GREEN}✓${END} web/static/scripts.js"
-        curl -s $GITHUB_TEMPLATE/web/static/styles.css > $DOMAIN/web/static/styles.css
+        curl -s $GITHUB_TEMPLATE/web/static/styles.css > "${DOMAIN}/web/static/styles.css"
         echo -e "${GREEN}✓${END} web/static/styles.css"
-        curl -s $GITHUB_TEMPLATE/web/footer.html > $DOMAIN/web/footer.html
+        curl -s $GITHUB_TEMPLATE/web/footer.html > "${DOMAIN}/web/footer.html"
         replace_in_file "$DOMAIN/web/footer.html" "DOMAIN" "$DOMAIN"
         echo -e "${GREEN}✓${END} web/footer.html"
-        curl -s $GITHUB_TEMPLATE/web/header.html > $DOMAIN/web/header.html
+        curl -s $GITHUB_TEMPLATE/web/header.html > "${DOMAIN}/web/header.html"
         echo -e "${GREEN}✓${END} web/header.html"
-        curl -s $GITHUB_TEMPLATE/web/head.html > $DOMAIN/web/head.html
+        curl -s $GITHUB_TEMPLATE/web/head.html > "${DOMAIN}/web/head.html"
         echo -e "${GREEN}✓${END} web/head.html"
         
         # Make the binary files executable
-        chmod +x $DOMAIN/bin/*
+        chmod +x "${DOMAIN}/bin/*"
 
         # Ask if the user wants to install QB64
 
         echo ""
         echo -e "${YELLOW}Do you want to install QB64?${END} ${DKGRAY}(y/n)${END}"
-        read INSTALL_QB64
+        read -r INSTALL_QB64
 
         if [[ $INSTALL_QB64 == "y" ]]; then
             echo ""
             echo -e "${YELLOW}Installing QB64...${END}"
             echo ""
-            pushd $DOMAIN
+            pushd "${DOMAIN}" || return 1
             ./bin/install_qb64
-            popd
+            popd || return 1
         fi
 
         echo ""
