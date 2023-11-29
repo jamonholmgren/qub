@@ -51,7 +51,7 @@ if [[ $1 == "-h" || $1 == "--help" ]]; then
     echo "Usage: qub [command] [options]"
     echo ""
     echo "Commands:"
-    echo "  create          Create a new Qub QB64 web project (coming soon)"
+    echo "  create          Create a new Qub QB64 web project"
     echo "  setup-server    Set up remote server for deployment (coming soon)"
     echo ""
     echo "Options:"
@@ -92,7 +92,7 @@ if [[ $1 == "create" ]]; then
         exit 1
     fi
 
-    # Make the folder
+    # Make the folders
     mkdir $DOMAIN
     mkdir $DOMAIN/bin
     mkdir -p $DOMAIN/web/pages
