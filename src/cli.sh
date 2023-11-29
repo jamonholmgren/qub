@@ -16,6 +16,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 DKGRAY='\033[1;30m'
 GREEN='\033[0;32m'
+CYAN='\033[0;36m'
 END='\033[0m' # End Color
 
 function replace_in_file {
@@ -68,8 +69,12 @@ fi
 if [[ $1 == "create" ]]; then
     echo "Creating new Qub QB64 website project..."
     echo ""
-    echo -e "${YELLOW}What domain will this be hosted on?${END} ${DKGRAY}(e.g. jamon.dev)${END}"
-    read DOMAIN
+
+    # If $DOMAIN isn't set, ask for it
+    if [[ -z $DOMAIN ]]; then
+        echo -e "${YELLOW}What domain will this be hosted on?${END} ${DKGRAY}(e.g. jamon.dev)${END}"
+        read DOMAIN
+    fi
 
     # Check for any whitespace in the domain name
     if [[ $DOMAIN =~ [[:space:]] ]]; then
@@ -145,6 +150,16 @@ if [[ $1 == "create" ]]; then
         ./bin/install_qb64
         popd
     fi
+
+    echo ""
+    echo -e "${GREEN}New QB64 website project created!${END}"
+    echo ""
+    echo -e "${YELLOW}Next steps:${END}"
+    echo ""
+    echo -e "  ${CYAN}cd ${DOMAIN}${END}"
+    echo -e "  ${CYAN}./bin/build${END}"
+    echo -e "  ${CYAN}./app${END}"
+    echo ""
 
     exit 0
 fi

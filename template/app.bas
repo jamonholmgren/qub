@@ -11,7 +11,7 @@ Const MAX_HEADER_SIZE = 4096 'bytes
 
 ' Const DEFAULT_HOST = "147.182.205.32" ' for hosting
 Const DEFAULT_HOST = "localhost" ' for local
-Const DEFAULT_PORT = "80"
+Const DEFAULT_PORT = "6464"
 
 ' Different types of web requests
 Const METHOD_HEAD = 1
