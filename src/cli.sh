@@ -5,7 +5,12 @@
 
 VERSION="0.0.1"
 
-# colors
+# What OS are we running on?
+
+OS=$(uname -s)
+
+# Colors
+
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
@@ -84,7 +89,12 @@ if [[ $1 == "create" ]]; then
     chmod +x $DOMAIN/bin/*
 
     # Replace the domain name in the README
-    sed -i "s/\$DOMAIN/$DOMAIN/g" $DOMAIN/README.md
+
+    if [[ $OS == "Darwin" ]]; then
+      sed -i '' "s/\$DOMAIN/$DOMAIN/g" $DOMAIN/README.md
+    elif [[ $OS == "Linux" ]]; then
+      sed -i "s/\$DOMAIN/$DOMAIN/g" $DOMAIN/README.md
+    fi
 
     exit 0
 fi
