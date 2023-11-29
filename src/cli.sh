@@ -45,25 +45,6 @@ main() {
         return 0
     fi
 
-    # Help command if provided -h or --help
-
-    if [[ $1 == "-h" || $1 == "--help" ]]; then
-        echo "Usage: qub [command] [options]"
-        echo ""
-        echo "Commands:"
-        echo "  create          Create a new Qub QB64 web project"
-        echo "  setup-server    Set up remote server for deployment (coming soon)"
-        echo ""
-        echo "Options:"
-        echo "  -h, --help      Show help"
-        echo "  -v, --version   Show version number"
-        echo ""
-        echo "Examples:"
-        echo "  qub create"
-        echo ""
-        return 0
-    fi
-
     # Create command
 
     if [[ $1 == "create" ]]; then
@@ -181,6 +162,27 @@ main() {
 
         return 0
     fi
+
+    # Otherwise, print help
+
+    # Help command if provided -h or --help
+
+    echo "Usage: qub [command|option]"
+    echo ""
+    echo "Commands:"
+    echo "  create          Create a new Qub QB64 web project"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help      Show help"
+    echo "  -v, --version   Show version number"
+    echo ""
+    echo "Examples:"
+    echo "  qub create"
+    echo ""
+    echo "If you need more help, please visit:"
+    echo "  https://github.com/jamonholmgren/qub"
+    echo ""
+    return 0
 }
 
 main "$@"

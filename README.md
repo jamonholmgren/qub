@@ -7,7 +7,7 @@
 First, alias the `qub` command to the following:
 
 ```
-alias qub="curl -fsSL https://raw.githubusercontent.com/jamonholmgren/qub/main/src/cli.sh | bash -s --"
+alias qub="source <(curl -sSL https://raw.githubusercontent.com/jamonholmgren/qub/main/src/cli.sh)"
 ```
 
 Now, you should be able to run it like so:
