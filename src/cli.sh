@@ -5,7 +5,9 @@
 
 VERSION="0.0.1"
 
+echo ""
 echo "Qub -- QBasic Website Generator"
+echo ""
 
 # Print version and exit
 
