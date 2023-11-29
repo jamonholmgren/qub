@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Qub CLI
-# By @jamonholmgren & @knewter
+
 main() {
     VERSION="0.1.0"
 
@@ -14,6 +14,8 @@ main() {
     CYAN='\033[1;36m'
     GREEN='\033[1;32m'
     END='\033[0m' # End Color
+
+    GITHUB_TEMPLATE="https://raw.githubusercontent.com/jamonholmgren/qub/main/template"
 
     function replace_in_file {
         local filename=$1
@@ -83,8 +85,6 @@ main() {
         mkdir "${DOMAIN}/bin"
         mkdir -p "${DOMAIN}/web/pages"
         mkdir -p "${DOMAIN}/web/static"
-
-        GITHUB_TEMPLATE="https://raw.githubusercontent.com/jamonholmgren/qub/main/template"
 
         echo ""
         echo -e "${GREEN}Creating project...${END}"
@@ -160,6 +160,49 @@ main() {
         return 0
     fi
 
+    # qub update
+
+    if [[ $1 == "update" ]]; then
+        echo ""
+        echo "Updating Qub-powered QB64 website project..."
+        echo ""
+
+        # If we don't have an app.bas file, exit
+
+        if [[ ! -f app.bas ]]; then
+            echo ""
+            echo -e "${RED}app.bas file not found.${END} Are you in the right folder?"
+            echo ""
+            return 1
+        fi
+
+        # If we aren't in a git repo, exit (unless --force is passed)
+
+        if [[ ! -d .git && ($2 != "--force" && $3 != "--force") ]]; then
+            echo ""
+            echo -e "${RED}Not in a git repo ... we don't want to lose your work.${END} To force update, pass --force."
+            echo ""
+            return 1
+        fi
+
+        # If we are in a git repo, but the working tree is dirty, exit (unless --force is passed)
+
+        if [[ -d .git && $(git status --porcelain) && ($2 != "--force" && $3 != "--force") ]]; then
+            echo ""
+            echo -e "${RED}Git working tree is dirty ... you should commit your work first.${END} To force update, pass --force."
+            echo ""
+            return 1
+        fi
+
+        # Download the latest app.bas from the template
+
+        curl -s $GITHUB_TEMPLATE/app.bas > app.bas
+        echo -e "${GREEN}✓${END} app.bas updated to latest"
+        echo ""
+
+        return 0
+    fi
+
     # Otherwise, print help
 
     # Help command if provided -h or --help
@@ -168,6 +211,7 @@ main() {
     echo -e ""
     echo -e "${CYAN}Commands:${END}"
     echo -e "  create          Create a new Qub QB64 web project"
+    echo -e "  update          Update an existing Qub QB64 web project to the latest Qub version"
     echo -e ""
     echo -e "${CYAN}Options:${END}"
     echo -e "  -h, --help      Show help"
@@ -177,6 +221,7 @@ main() {
     echo -e "  qub --help"
     echo -e "  qub -v"
     echo -e "  qub create"
+    echo -e "  qub update"
     echo -e ""
     echo -e "If you need more help, please visit:"
     echo -e "  ${DKGRAY}https://github.com/jamonholmgren/qub${END}"
