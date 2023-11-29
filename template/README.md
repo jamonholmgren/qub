@@ -1,4 +1,4 @@
-# $NAME QBasic Website
+# $DOMAIN QBasic Website
 
 This is a website powered by [QB64](https://www.qb64.org/) and [Qub](https://qub.jamon.dev).
 

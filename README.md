@@ -4,7 +4,7 @@
 
 ## Installation
 
-First, alias the curl command so it looks prettier:
+First, alias the `qub` command to the following:
 
 ```
 alias qub="curl -fsSL https://raw.githubusercontent.com/jamonholmgren/qub/main/src/cli.sh | bash -s --"
@@ -18,9 +18,6 @@ qub --version
 qub --help
 ```
 
-```
-
 ## License
 
 MIT -- see [LICENSE](LICENSE) for details.
-```
