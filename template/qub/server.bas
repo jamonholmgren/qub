@@ -40,11 +40,31 @@ Dim client_host(1 To MAX_CLIENTS) As String
 Dim client_browser(1 To MAX_CLIENTS) As String
 
 connections = 0
+port$ = DEFAULT_PORT
 
-Print "Starting QB64 webserver on port " + DEFAULT_PORT
+' check if qub.conf exists, and read in the configuration if so
+If _FILEEXISTS("./qub/qub.conf") Then
+    Print "Reading configuration from qub.conf"
+    Open "./qub/qub.conf" For Input As #1
+    Do While Not EOF(1)
+        Line Input #1, line$
+        ' Strip any preceding whitespace from line$
+        Do While Left$(line$, 1) = " "
+            line$ = Mid$(line$, 2)
+        Loop
+
+        ' Read in the config options
+        If Left$(line$, 5) = "port=" Then
+            port$ = Mid$(line$, 6)
+        End If
+    Loop
+    Close #1
+End If
+
+Print "Starting QB64 webserver on port " + port$
 
 ' kick off the listener
-host = _OpenHost("TCP/IP:" + DEFAULT_PORT)
+host = _OpenHost("TCP/IP:" + port$)
 
 ' main loop!
 Do
@@ -111,7 +131,6 @@ Loop Until InKey$ = Chr$(27) ' escape quits
 ' After a keypress, close all connections and quit
 Close #host
 System ' Quits to system
-
 
 StaticFileError:
     Print "File error: " + Error$
@@ -311,7 +330,7 @@ Function handle_request% (c As Integer)
         If Len(client_host(c)) = 0 Then client_host(c) = DEFAULT_HOST
     End If
 
-    'assume the request can be completed; set to 0 if it can't.
+    ' assume the request can be completed; set to 0 if it can't.
     handle_request = 1
     code$ = "200 OK"
     content_type$ = "text/html"
@@ -435,16 +454,16 @@ Function handle_request% (c As Integer)
 
     Exit Function
 
-    not_found:
+not_found:
     respond c, "HTTP/1.1 404 Not Found", "404 Not Found", "text/html"
     Exit Function
 
-    large_request:
+large_request:
     respond c, "HTTP/1.1 413 Request Entity Too Large", "", "text/html"
     handle_request = 1
     Exit Function
 
-    bad_request:
+bad_request:
     respond c, "HTTP/1.1 400 Bad Request", "", "text/html"
     handle_request = 1
     Exit Function
@@ -453,11 +472,11 @@ Function handle_request% (c As Integer)
     handle_request = 1
     Exit Function
 
-    runtime_internal_error:
+runtime_internal_error:
     Print "RUNTIME ERROR: Error code"; Err; ", Line"; _ErrorLine
     Resume internal_error
     
-    internal_error:
+internal_error:
     respond c, "HTTP/1.1 500 Internal Server Error", "", "text/html"
     handle_request = 1
     Exit Function

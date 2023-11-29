@@ -94,8 +94,10 @@ main() {
         curl -s $GITHUB_TEMPLATE/README.md > "${DOMAIN}/README.md"
         replace_in_file "$DOMAIN/README.md" "DOMAIN" "$DOMAIN"
         echo -e "${GREEN}✓${END} README.md"
-        curl -s $GITHUB_TEMPLATE/app.bas > "${DOMAIN}/app.bas"
-        echo -e "${GREEN}✓${END} app.bas"
+        curl -s $GITHUB_TEMPLATE/qub/server.bas > "${DOMAIN}/qub/server.bas"
+        echo -e "${GREEN}✓${END} qub/server.bas"
+        curl -s $GITHUB_TEMPLATE/qub/qub.conf > "${DOMAIN}/qub/qub.conf"
+        echo -e "${GREEN}✓${END} qub/qub.conf"
         curl -s $GITHUB_TEMPLATE/.gitignore > "${DOMAIN}/.gitignore"
         echo -e "${GREEN}✓${END} .gitignore"
         curl -s $GITHUB_TEMPLATE/bin/install_qb64 > "${DOMAIN}/bin/install_qb64"
@@ -149,7 +151,7 @@ main() {
             echo -e "  ./bin/install_qb64"
         fi
         echo -e "  ./bin/build"
-        echo -e "  ./app"
+        echo -e "  ./server"
         echo ""
         echo -e "${YELLOW}Support Qub development:${END}"
         echo ""
@@ -167,11 +169,11 @@ main() {
         echo "Updating Qub-powered QB64 website project..."
         echo ""
 
-        # If we don't have an app.bas file, exit
+        # If we don't have a server.bas file, exit
 
-        if [[ ! -f app.bas ]]; then
+        if [[ ! -f qub/server.bas ]]; then
             echo ""
-            echo -e "${RED}app.bas file not found.${END} Are you in the right folder?"
+            echo -e "${RED}qub/server.bas file not found.${END} Are you in the right folder?"
             echo ""
             return 1
         fi
@@ -194,10 +196,10 @@ main() {
             return 1
         fi
 
-        # Download the latest app.bas from the template
+        # Download the latest server.bas from the template
 
-        curl -s $GITHUB_TEMPLATE/app.bas > app.bas
-        echo -e "${GREEN}✓${END} app.bas updated to latest"
+        curl -s $GITHUB_TEMPLATE/qub/server.bas > qub/server.bas
+        echo -e "${GREEN}✓${END} qub/server.bas updated to latest"
         echo ""
 
         return 0

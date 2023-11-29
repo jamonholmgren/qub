@@ -4,9 +4,9 @@ echo "This installs QB64 on a computer or server."
 
 ROOT_FOLDER=$(pwd)
 
-# Check if $ROOT_FOLDER/app.bas exists (if not, exit with an error)
-if [ ! -f "${ROOT_FOLDER}/app.bas" ]; then
-  echo "Error: app.bas not found in ${ROOT_FOLDER}"
+# Check if $ROOT_FOLDER/qub/server.bas exists (if not, exit with an error)
+if [ ! -f "${ROOT_FOLDER}/qub/server.bas" ]; then
+  echo "Error: qub/server.bas not found in ${ROOT_FOLDER}"
   echo "(are you running this from the right folder?)"
   exit 1
 fi

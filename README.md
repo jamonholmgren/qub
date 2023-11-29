@@ -38,7 +38,7 @@ qub create
 
 It'll ask you for your domain name (e.g. jamon.dev) which doubles as your project's folder name. It will also ask if you want to install QB64 (I recommend you do).
 
-When done, you can CD into the new folder and run `./bin/build` to build the website. Then, run `./app` to start the web server. Visit [http://localhost:6464/](http://localhost:6464/) to view the website.
+When done, you can CD into the new folder and run `./bin/build` to build the website. Then, run `./server` to start the web server. Visit [http://localhost:6464/](http://localhost:6464/) to view the website.
 
 ## Modifying your website
 
@@ -46,6 +46,9 @@ Your new website has the following folder structure:
 
 ```
 bin
+qub
+  server.bas
+  qub.conf
 web
   pages
     home.html
@@ -56,15 +59,12 @@ web
   footer.html
   header.html
   head.html
-app.bas
 README.md
 ```
 
-### app.bas
+### qub/server.bas
 
-This is the Qub web server. You can modify it if you want to change the port or add more functionality.
-
-However, if you don't modify it, you can periodically update it by running `qub update`. Note this will blow away any modifications you've made, so be careful!
+This is the Qub web server. You can periodically update it by running `qub update`. Note this will blow away any modifications you've made, so be careful!
 
 Qub's web server was originally based on [Yacy](https://github.com/smokingwheels/Yacy_front_end) by SmokingWheels, but has been heavily modified since. It comes with a number of features:
 
@@ -74,10 +74,10 @@ Qub's web server was originally based on [Yacy](https://github.com/smokingwheels
 - [x] Binary file serving (images, fonts, etc)
 - [x] Custom 404 page support
 - [x] Basic dynamic variable support (e.g. `${year}` in web/footer.html, `${slug}` for use in your navigation, etc)
+- [x] Custom port support (via ./qub.conf)
 - [ ] Customizable dynamic variable support (coming soon)
 - [ ] 301 redirects support (coming soon)
 - [ ] Custom 500 page support (coming soon)
-- [ ] Custom port support (coming soon)
 - [ ] More customizable templating support (coming soon)
 
 It does not (and probably won't) support HTTPS or HTTP2. I recommend putting CloudFlare in front of it in production (more in the [deploy guide](#deploy-guide) below).
@@ -130,13 +130,13 @@ Once I had a working website, I realized that I wanted to make it easier for oth
 
 Qub is not particularly important to modern technology in the grand scheme of things, but it's been a blast to work on. I hope you enjoy it!
 
+## Future
+
+I'd love to build more QBasic-powered server capabilities. I'm still learning how to utilize QB64 -- for example, in old QBasic, you couldn't include external files, but in QB64 you can.
+
 ## TODO
 
-- [ ] Fill out the README, documentation, screenshots
-- [ ] Set up CI
-- [ ] Add a Deployment doc
 - [ ] Make the default template look nicer, better template README
-- [ ] htmx version maybe
 - [ ] YouTube video on Jamon's Code Quests
 
 ## License
