@@ -40,7 +40,7 @@ if [ -d $ROOT_FOLDER/qb64 ]; then
 fi
 
 # Download the latest qb64 source code
-curl -L -o ./qb64_src.tgz.gz $SOURCE_CODE_URL
+curl -s -L -o ./qb64_src.tgz.gz $SOURCE_CODE_URL
 
 # Unzip the file
 tar -xf ./qb64_src.tgz.gz

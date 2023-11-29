@@ -14,8 +14,8 @@ OS=$(uname -s)
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
-GRAY='\033[0;37m'
 DKGRAY='\033[1;30m'
+GREEN='\033[0;32m'
 END='\033[0m' # End Color
 
 function replace_in_file {
@@ -95,12 +95,18 @@ if [[ $1 == "create" ]]; then
 
     GITHUB_TEMPLATE="https://raw.githubusercontent.com/jamonholmgren/qub/main/template"
 
+    echo ""
+    echo -e "${GREEN}Creating project...${END}"
+    echo ""
+
     # Copy files from Github
     curl -s $GITHUB_TEMPLATE/README.md > $DOMAIN/README.md
     replace_in_file "$DOMAIN/README.md" "DOMAIN" "$DOMAIN"
     echo -e "${GREEN}✓${END} README.md"
     curl -s $GITHUB_TEMPLATE/app.bas > $DOMAIN/app.bas
     echo -e "${GREEN}✓${END} app.bas"
+    curl -s $GITHUB_TEMPLATE/.gitignore > $DOMAIN/.gitignore
+    echo -e "${GREEN}✓${END} .gitignore"
     curl -s $GITHUB_TEMPLATE/bin/install_qb64 > $DOMAIN/bin/install_qb64
     echo -e "${GREEN}✓${END} bin/install_qb64"
     curl -s $GITHUB_TEMPLATE/bin/build > $DOMAIN/bin/build
