@@ -44,7 +44,7 @@ port$ = DEFAULT_PORT
 
 ' check if qub.conf exists, and read in the configuration if so
 If _FILEEXISTS("./qub/qub.conf") Then
-    Print "Reading configuration from qub.conf"
+    Print "Reading configuration from qub/qub.conf"
     Open "./qub/qub.conf" For Input As #1
     Do While Not EOF(1)
         Line Input #1, line$
@@ -487,7 +487,7 @@ Function PageExists(filename$)
 End Function
 
 Function StaticExists(filename$)
-    StaticExists = _FILEEXISTS("./web/static" + filename$) * -1
+    StaticExists = _FILEEXISTS("./web/static/" + filename$) * -1
 End Function
 
 ' Actually responds to the request
