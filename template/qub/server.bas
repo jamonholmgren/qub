@@ -89,7 +89,7 @@ Do
                     Print "TIMED OUT: request for: " + client_uri(c)
                     Print " from " + _ConnectionAddress(client_handle(c))
                     Print " using " + client_browser(c)
-                    respond c, "HTTP/1.1 408 Request Timeout", "", "text/html"
+                    respond_text c, "HTTP/1.1 408 Request Timeout", "", "text/html"
                     tear_down c
                     ' If the request timed out, we can reduce the number of active connections
                     connections = connections - 1
@@ -337,17 +337,18 @@ Function handle_request% (c As Integer)
 
     Select Case client_method(c)
         Case METHOD_HEAD
-            respond c, "HTTP/1.1 200 OK", "", "text/html"
+            respond_text c, "HTTP/1.1 200 OK", "", "text/html"
         Case METHOD_GET
             uri$ = client_uri(c)
             l$ = Left$(uri$, InStr(uri$, ".") - 1)
             ext$ = Right$(uri$, Len(uri$) - Len(l$))
             filename$ = Mid$(uri$, InStr(uri$, "/static/") + 8)
+            pagename$ = "404" ' 404 by default
 
             ' Router!
             Select Case 1
                 Case Len(uri$) ' hack .. length of 1 is just "/" so we capture home page
-                    html$ = load_page$("home")
+                    pagename$ = "home"
                 Case InStr(uri$, "/favicon.ico")
                     ' html$ = favicon(c)
                     GoTo not_found
@@ -431,14 +432,19 @@ Function handle_request% (c As Integer)
 
                     Exit Function
                 Case PageExists(uri$)
-                    ' route any pages in the pages folder
-                    html$ = load_page$(uri$)
+                    pagename$ = uri$
+
+                    ' does pagename$ start with a slash?
+                    If Left$(pagename$, 1) = "/" Then
+                        ' remove the slash
+                        pagename$ = Mid$(pagename$, 2)
+                    End If
                 Case Else
-                    html$ = load_page$("/404")
+                    pagename$ = "404"
                     code$ = "404 Not Found"
             End Select
 
-            respond c, "HTTP/1.1 " + code$, html$, content_type$
+            respond_page c, "HTTP/1.1 " + code$, pagename$, content_type$
             
         Case METHOD_POST
             GoTo unimplemented
@@ -455,20 +461,20 @@ Function handle_request% (c As Integer)
     Exit Function
 
 not_found:
-    respond c, "HTTP/1.1 404 Not Found", "404 Not Found", "text/html"
+    respond_text c, "HTTP/1.1 404 Not Found", "404 Not Found", "text/html"
     Exit Function
 
 large_request:
-    respond c, "HTTP/1.1 413 Request Entity Too Large", "", "text/html"
+    respond_text c, "HTTP/1.1 413 Request Entity Too Large", "", "text/html"
     handle_request = 1
     Exit Function
 
 bad_request:
-    respond c, "HTTP/1.1 400 Bad Request", "", "text/html"
+    respond_text c, "HTTP/1.1 400 Bad Request", "", "text/html"
     handle_request = 1
     Exit Function
     unimplemented:
-    respond c, "HTTP/1.1 501 Not Implemented", "", "text/html"
+    respond_text c, "HTTP/1.1 501 Not Implemented", "", "text/html"
     handle_request = 1
     Exit Function
 
@@ -477,7 +483,7 @@ runtime_internal_error:
     Resume internal_error
     
 internal_error:
-    respond c, "HTTP/1.1 500 Internal Server Error", "", "text/html"
+    respond_text c, "HTTP/1.1 500 Internal Server Error", "", "text/html"
     handle_request = 1
     Exit Function
 End Function
@@ -490,57 +496,102 @@ Function StaticExists(filename$)
     StaticExists = _FILEEXISTS("./web/static/" + filename$) * -1
 End Function
 
-' Actually responds to the request
-Sub respond (c As Integer, header As String, payload As String, content_type As String)
-    ' Pull in the client_handle first
-    Shared client_handle() As Integer
+' Respond with headers
 
+Sub respond_headers (c As Integer, header As String, content_type As String)
     ' Output ... build with a header first, then an empty line, then the payload
-    out$ = header + CRLF
+    send c, header
 
-    out$ = out$ + "Date: " + datetime$ + CRLF
-    out$ = out$ + "Server: Qub" + CRLF
-    out$ = out$ + "Last-Modified: " + StartTime + CRLF
-    out$ = out$ + "Cache-Control: public, max-age=86400, s-maxage=86400" + CRLF
-    out$ = out$ + "Connection: close" + CRLF
+    send c, "Date: " + datetime$
+    send c, "Server: Qub"
+    send c, "Last-Modified: " + StartTime
+    send c, "Cache-Control: public, max-age=86400, s-maxage=86400"
+    send c, "Connection: close"
     
-    ' If we have a payload, then the content-type is text/html, UTF-8
-    If Len(payload) Then
-        out$ = out$ + "Content-Type: " + content_type + "; charset=UTF-8" + CRLF
-        out$ = out$ + "Content-Length:" + Str$(Len(payload)) + CRLF
-    End If
+    send c, "Content-Type: " + content_type + "; charset=UTF-8"
+    ' We probably should have a Content-Length header, but since we'd rather read a line
+    ' at a time and don't know ahead of time what the length will be, let's skip it
+    ' send c, "Content-Length:" + Str$(Len(payload))
 
     ' extra newline to signify end of header
-    out$ = out$ + CRLF
+    send c, ""
+End Sub
 
-    ' Put the header output to the handle
-    Put #client_handle(c), , out$
+' Respond with a text payload
+Sub respond_text (c As Integer, header As String, payload As String, content_type As String)
+    ' Put the headers to the handle
+    respond_headers c, header, content_type
 
     ' Put the payload to the handle
-    Put #client_handle(c), , payload
+    send c, payload
+
+    ' Done!
+End Sub
+
+Sub respond_page (c As Integer, header As String, pagename As String, content_type As String)
+    ' Put the headers to the handle
+    respond_headers c, header, content_type
+
+    title$ = ""
+    read_metadata pagename, title$
+
+    ' Load the layout & page and put those to the handle
+    Open "./web/layout.html" For Input As #1
+    Do While Not EOF(1)
+        Line Input #1, line$
+
+        ' Replace all dynamic variables
+        line$ = replace(line$, "<!--$TITLE-->", title$)
+        line$ = replace(line$, "<!--$YEAR-->", Mid$(datetime$, 13, 4))
+        line$ = replace(line$, "<!--$SLUG-->", slugify$(pagename))
+
+        ' If line includes <!--$BODY-->, then load the page body
+        If InStr(line$, "<!--$BODY-->") Then        
+            ' Output everything up to the <!--$BODY--> line
+            send c, Left$(line$, InStr(line$, "<!--$BODY-->") - 1)
+
+            ' Load the page body
+            Print "loading page: " + pagename
+            Open "./web/pages/" + pagename + ".html" For Input As #2
+            Do While Not EOF(2)
+                Line Input #2, page_line$
+
+                ' Replace all dynamic variables
+                page_line$ = replace(page_line$, "<!--$TITLE-->", title$)
+                page_line$ = replace(page_line$, "<!--$YEAR-->", Mid$(datetime$, 13, 4))
+                page_line$ = replace(page_line$, "<!--$SLUG-->", slugify$(pagename))
+                
+                ' Push the current line to the client
+                send c, page_line$
+            Loop
+            Close #2
+
+            ' Output everything after the <!--$BODY--> line
+            send c, Mid$(line$, InStr(line$, "<!--$BODY-->") + 12)
+        Else
+            ' Not a <!--$BODY--> line, so just push the full thing to the client
+            send c, line$
+        End If
+    Loop
+    Close #1
 
     ' Done!
 End Sub
 
 ' static text files
 Sub respond_static (c As Integer, header As String, filename as String, content_type As String)
-    Shared client_handle() As Integer
-
     Print "Serving static file: " + filename
 
-    out$ = header + CRLF
-    out$ = out$ + "Date: " + datetime$ + CRLF
-    out$ = out$ + "Server: QweB64" + CRLF
-    out$ = out$ + "Last-Modified: " + StartTime + CRLF
+    send c, header
+    send c, "Date: " + datetime$
+    send c, "Server: QweB64"
+    send c, "Last-Modified: " + StartTime
     ' 604800 seconds = 1 week
     ' 86400 seconds = 1 day
-    out$ = out$ + "Cache-Control: public, max-age=86400, s-maxage=86400" + CRLF
-    out$ = out$ + "Connection: close" + CRLF
-    out$ = out$ + "Content-Type: " + content_type + "; charset=UTF-8" + CRLF
-    out$ = out$ + CRLF
-
-    ' output headers first
-    Put #client_handle(c), , out$
+    send c, "Cache-Control: public, max-age=86400, s-maxage=86400"
+    send c, "Connection: close"
+    send c, "Content-Type: " + content_type + "; charset=UTF-8"
+    send c, ""
 
     ' Read the file and write it to the handle
     ON ERROR GOTO StaticFileError
@@ -549,8 +600,7 @@ Sub respond_static (c As Integer, header As String, filename as String, content_
 
     Do While Not EOF(1)
        Line Input #1, line$
-       out$ = line$ + CRLF
-       Put #client_handle(c), , out$
+       send c, line$
     Loop
 
     Close #1
@@ -559,19 +609,8 @@ Sub respond_static (c As Integer, header As String, filename as String, content_
 End Sub
 
 Sub respond_binary (c As Integer, header As String, filename as String, content_type As String)
-    Shared client_handle() As Integer
-
-    out$ = header + CRLF
-    out$ = out$ + "Date: " + datetime$ + CRLF
-    out$ = out$ + "Server: QweB64" + CRLF
-    out$ = out$ + "Last-Modified: " + StartTime + CRLF
-    out$ = out$ + "Cache-Control: public, max-age=86400, s-maxage=86400" + CRLF
-    out$ = out$ + "Connection: close" + CRLF
-    out$ = out$ + "Content-Type: " + content_type + "; charset=UTF-8" + CRLF
-    out$ = out$ + CRLF
-
-    ' output headers first
-    Put #client_handle(c), , out$
+    ' Headers first
+    respond_headers c, header, content_type
 
     ' Read the file and write it to the handle
     ON ERROR GOTO StaticFileError
@@ -596,7 +635,7 @@ Sub respond_binary (c As Integer, header As String, filename as String, content_
         Get #1, , buffer
         
         ' Send the chunk to the client
-        Put #client_handle(c), , buffer  ' Send the entire buffer
+        send c, buffer  ' Send the entire buffer
         
         ' Reduce the remaining file length by the size of the chunk just read
         fileLength = fileLength - Len(buffer)
@@ -668,15 +707,15 @@ Function shrinkspace$ (str1 As String)
 End Function
 
 ' slugifies a url path string, assuming no foreign characters
-Function slugify$ (str1 As string)
-    str1 = LCase$(str1)
-    str1 = replace$(str1, " ", "-")
-    str1 = replace$(str1, "/", "-")
-    str1 = replace$(str1, "\", "-")
-    str1 = replace$(str1, ":", "-")
-    str1 = replace$(str1, "*", "-")
-    str1 = replace$(str1, "?", "-")
-    slugify = str1
+Function slugify$ (urlpath As string)
+    str1$ = LCase$(urlpath)
+    str1$ = replace$(str1$, " ", "-")
+    str1$ = replace$(str1$, "/", "-")
+    str1$ = replace$(str1$, "\", "-")
+    str1$ = replace$(str1$, ":", "-")
+    str1$ = replace$(str1$, "*", "-")
+    str1$ = replace$(str1$, "?", "-")
+    slugify$ = str1$
 End Function
 
 ' replaces various template variables with their values
@@ -689,84 +728,44 @@ Function replace$ (str1 As String, template_var As String, template_value As Str
     replace = str1
 End Function
 
-' Replaces all template variables with their values
-Function process_template$ (template_str As String, pagename As String)
-    template_str = replace(template_str, "${year}", Mid$(datetime$, 13, 4))
-    template_str = replace(template_str, "${slug}", slugify(pagename))
-    
-    process_template = template_str
-End Function
+' Passing in variables by reference (such as title) so we can add more later
+Sub read_metadata (pagename As String, title As String)
+    ' Open the page file so we can read its metadata
+    Open "./web/pages/" + pagename + ".html" For Input As #3
 
-Function full_html$ (title As String, body As String, pagename As String)
-    h$ = "<!DOCTYPE html>" + CRLF
-    h$ = h$ + "<html>" + CRLF
-    h$ = h$ + "<head>" + CRLF
-    h$ = h$ + "<title>" + title + "</title>" + CRLF
+    If Not EOF(3) Then
+        Line Input #3, page_line$
+        ' Metadata is like this:
+        ' <!--META
+        ' TITLE: My Page Title
+        ' -->
+        If Left$(page_line$, 8) = "<!--META" Then
+            ' Read all lines until we hit the end of the metadata
+            Do While Not EOF(3)
+                Line Input #3, page_line$
+                If page_line$ = "-->" Then Exit Do
 
-    ' extra head tags
-    Open "./web/head.html" For Input As #1
-    Do While Not EOF(1)
-       Line Input #1, line$
-       h$ = h$ + process_template(line$, pagename) + CRLF
-    Loop
-    Close #1
-
-    h$ = h$ + "</head>" + CRLF
-    h$ = h$ + "<body>" + CRLF
-    h$ = h$ + "<main>" + CRLF
-    
-    ' Load the header from header.html and add to h$
-    Open "./web/header.html" For Input As #1
-    Do While Not EOF(1)
-       Line Input #1, line$
-       h$ = h$ + process_template(line$, pagename) + CRLF
-    Loop
-    Close #1
-
-    h$ = h$ + body + CRLF
-
-        
-    ' Load the footer from footer.html and add to h$
-    Open "./web/footer.html" For Input As #1
-    Do While Not EOF(1)
-       Line Input #1, line$
-       h$ = h$ + process_template(line$, pagename) + CRLF
-    Loop
-    Close #1
-    
-    h$ = h$ + "</main>" + CRLF
-
-    h$ = h$ + "</body>" + CRLF
-    h$ = h$ + "</html>" + CRLF
-    full_html = h$
-End Function
-
-Function load_page$ (pagename as String)
-    title$ = "Jamon Holmgren's Personal Website"
-
-    ' check if pagename starts with a slash and remove it
-    If Left$(pagename, 1) = "/" Then
-        pagename = Mid$(pagename, 2)
+                ' Parse the metadata
+                If Left$(page_line$, 6) = "TITLE:" Then
+                    Print "Found title: " + Mid$(page_line$, 7)
+                    title = Mid$(page_line$, 7)
+                    ' Strip any left whitespace
+                    Do While Left$(title, 1) = " "
+                        title = Mid$(title, 2)
+                    Loop
+                End If
+            Loop
+        End If
     End If
 
-    h$ = ""
-    ' Read the page and return it
-    Print "Loading page: " + pagename
+    Close #3
+End Sub
 
-    Open "./web/pages/" + pagename + ".html" For Input As #1
-    Do While Not EOF(1)
-       Line Input #1, line$
-       
-       if line$ = "<!--TITLE" Then
-           h$ = h$ + line$ + CRLF
-           ' next line is the title! let's store it
-           Line Input #1, line$
-           title$ = line$
-       End If
-    
-       h$ = h$ + process_template(line$, pagename) + CRLF
-    Loop
-    Close #1
+Sub send (c as Integer, s as String)
+    Shared client_handle() As Integer
 
-    load_page = full_html$(title$, h$, pagename)
-End Function
+    ' add trailing CRLF
+    s = s + CRLF
+
+    Put #client_handle(c), , s
+End Sub
