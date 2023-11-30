@@ -115,13 +115,9 @@ main() {
         echo -e "${GREEN}✓${END} web/static/scripts.js"
         curl -s $GITHUB_TEMPLATE/web/static/styles.css > "${DOMAIN}/web/static/styles.css"
         echo -e "${GREEN}✓${END} web/static/styles.css"
-        curl -s $GITHUB_TEMPLATE/web/footer.html > "${DOMAIN}/web/footer.html"
-        replace_in_file "$DOMAIN/web/footer.html" "DOMAIN" "$DOMAIN"
-        echo -e "${GREEN}✓${END} web/footer.html"
-        curl -s $GITHUB_TEMPLATE/web/header.html > "${DOMAIN}/web/header.html"
-        echo -e "${GREEN}✓${END} web/header.html"
-        curl -s $GITHUB_TEMPLATE/web/head.html > "${DOMAIN}/web/head.html"
-        echo -e "${GREEN}✓${END} web/head.html"
+        curl -s $GITHUB_TEMPLATE/web/layout.html > "${DOMAIN}/web/layout.html"
+        replace_in_file "$DOMAIN/web/layout.html" "DOMAIN" "$DOMAIN"
+        echo -e "${GREEN}✓${END} web/layout.html"
         
         # Make the binary files executable
         chmod +x "${DOMAIN}/bin/*"

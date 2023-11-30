@@ -56,9 +56,7 @@ web
   static
     scripts.js
     styles.css
-  footer.html
-  header.html
-  head.html
+  layout.html
 README.md
 ```
 
@@ -73,7 +71,7 @@ Qub's web server was originally based on [Yacy](https://github.com/smokingwheels
 - [x] Static file serving (css, js, etc)
 - [x] Binary file serving (images, fonts, etc)
 - [x] Custom 404 page support
-- [x] Basic dynamic variable support (e.g. `${year}` in web/footer.html, `${slug}` for use in your navigation, etc)
+- [x] Basic dynamic variable support (e.g. `<!--$YEAR-->` in web/layout.html, etc)
 - [x] Custom port support (via ./qub.conf)
 - [ ] Customizable dynamic variable support (coming soon)
 - [ ] 301 redirects support (coming soon)
@@ -84,20 +82,22 @@ It does not (and probably won't) support HTTPS or HTTP2. I recommend putting Clo
 
 ### Common included files
 
-In the `web` folder, you'll find three files that are included on every page -- head.html, header.html, and footer.html.
+In the `web` folder, you'll find a layout.html file.
 
-The header and footer are both directly within the `<body>` tag, while head is within the `<head>` tag, like so:
+This is the standard layout for your website, and includes your html's head and body sections,
+with placeholder comments for dynamic content like what page is being rendered.
 
 ```html
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- head.html goes here -->
+    <!-- other stuff -->
+    <title><!--$TITLE--></title>
   </head>
   <body>
-    <!-- header.html goes here -->
-    <!-- routed page content goes here -->
-    <!-- footer.html goes here -->
+    <!-- whatever you want to wrap your page content with -->
+    <!--$BODY-->
+    <!-- footer content, etc -->
   </body>
 </html>
 ```
