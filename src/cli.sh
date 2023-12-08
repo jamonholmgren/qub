@@ -119,9 +119,10 @@ main() {
         curl -s $GITHUB_TEMPLATE/web/layout.html > "${DOMAIN}/web/layout.html"
         replace_in_file "$DOMAIN/web/layout.html" "DOMAIN" "$DOMAIN"
         echo -e "${GREEN}✓${END} web/layout.html"
-        
+
         # Make the binary files executable
-        chmod +x "${DOMAIN}/bin/*"
+        # shellcheck disable=2086
+        chmod +x ./$DOMAIN/bin/*
 
         # Ask if the user wants to install QB64
 
