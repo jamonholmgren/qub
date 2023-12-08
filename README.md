@@ -10,7 +10,7 @@ Qub (pronounced "cube") is a CLI that generates a web server and framework for b
 
 ## Getting started
 
-_Windows Support_: Qub has only been tested on macOS and Linux. It might work on Windows WSL (Windows Subsystem for Linux) or Git Bash on Windows. If you want to help test and make it run on Windows, please open an issue or PR!
+_(Note: macOS & Linux only)_
 
 To get started, set up your `qub` alias first:
 
@@ -27,6 +27,8 @@ qub --help
 qub create
 qub update
 ```
+
+_**Windows Support:** Qub has only been tested on macOS and Linux. It might work on Windows WSL (Windows Subsystem for Linux) or Git Bash on Windows. If you want to help test and make it run on Windows, please open an issue or PR!_
 
 ## Creating a website
 
