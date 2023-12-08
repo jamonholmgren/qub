@@ -83,6 +83,7 @@ main() {
         # Make the folders
         mkdir "${DOMAIN}"
         mkdir "${DOMAIN}/bin"
+        mkdir -p "${DOMAIN}/qub"
         mkdir -p "${DOMAIN}/web/pages"
         mkdir -p "${DOMAIN}/web/static"
 
