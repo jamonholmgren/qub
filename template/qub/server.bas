@@ -73,6 +73,9 @@ Do
         For c = 1 To MAX_CLIENTS
             ' If this connection is active
             If client_handle(c) Then
+                ' Add logging to monitor connection processing
+                Print "Processing connection #" + Str$(c) + " (" + Str$(ROUND((Timer(.001) - client_expiry(c)) / 1000, 1)) + "ms old)"
+
                 ' work on the request in an effort to finish it
                 If handle_request(c) Then
                     ' Ignore "captive" pings
@@ -124,8 +127,8 @@ Do
         Loop
     End If
 
-    ' Limit CPU usage and leave some time for stuff be sent across the network..I have it as high as 1000 on my Front End
-    _Limit 500 ' default 50
+    ' Limit CPU usage and leave some time for stuff be sent across the network
+    _Limit 100 ' default 100, range 1-1000. Higher numbers = better perf at cost of higher idle CPU usage
 Loop Until InKey$ = Chr$(27) ' escape quits
 
 ' After a keypress, close all connections and quit
