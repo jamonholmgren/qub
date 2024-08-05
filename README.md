@@ -31,7 +31,7 @@ curl -sSL https://raw.githubusercontent.com/jamonholmgren/qub/main/src/cli.sh > 
 Open the `qub.sh` file in your editor and review it. If you're comfortable with what it's doing, alias it:
 
 ```
-alias qub="source ./qub.sh"
+alias qub="source $PWD/qub.sh"
 ```
 
 </details>
