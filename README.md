@@ -12,11 +12,29 @@ Qub (pronounced "cube") is a CLI that generates a web server and framework for b
 
 _(Note: macOS & Linux only)_
 
-To get started, set up your `qub` alias first:
+To get started, set up your `qub` alias first. This is the quick & easy way:
 
 ```
 alias qub="source <(curl -sSL https://raw.githubusercontent.com/jamonholmgren/qub/main/src/cli.sh)"
 ```
+
+However, some are understandably uncomfortable with running a script directly from the internet. If you'd like to run it locally, here's how:
+
+<details>
+<summary><strong>Manual setup</strong></summary>
+Download it:
+
+```
+curl -sSL https://raw.githubusercontent.com/jamonholmgren/qub/main/src/cli.sh > ./qub.sh
+```
+
+Open the `qub.sh` file in your editor and review it. If you're comfortable with what it's doing, alias it:
+
+```
+alias qub="source ./qub.sh"
+```
+
+</details>
 
 Now, you should be able to run the CLI:
 
